@@ -11,7 +11,6 @@
 int main (int argc, char **argv) {
   int nranks;
   int myrank;
-  int i;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nranks);
@@ -21,7 +20,8 @@ int main (int argc, char **argv) {
   yakl::init();
 
   Mesh mesh;
-  mesh.read("mesh.nc");
+
+  mesh.read("initial_state.nc");
 
   yakl::finalize();
   MPI_Finalize();

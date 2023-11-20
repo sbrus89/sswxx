@@ -1,4 +1,5 @@
 #include "const.h"
+#include "io.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -11,165 +12,122 @@ public:
    int2dHost edgesOnEdge, cellsOnEdge, verticesOnEdge;
    int2dHost cellsOnVertex, edgesOnVertex;
    int2dHost cellsOnCell, edgesOnCell, verticesOnCell;
-   int2dHost indexToEdgeID, indexToVertexID, indexToCellID;
-   int2dHost nEdgesOnEdge, nEdgesOnCell;
-   int2dHost boundaryVertex;
-   int2dHost obtuseTriangle;
+   int1dHost indexToEdgeID, indexToVertexID, indexToCellID;
+   int1dHost nEdgesOnEdge, nEdgesOnCell;
+   int1dHost boundaryVertex;
+   int1dHost obtuseTriangle;
   
    real2dHost weightsOnEdge;
-   real2dHost xCell, yCell, zCell;
-   real2dHost lonCell, latCell;
-   real2dHost xEdge, yEdge, zEdge;
-   real2dHost lonEdge, latEdge;
-   real2dHost xVertex, yVertex, zVertex;
-   real2dHost lonVertex, latVertex;
-   real2dHost dcEdge, dvEdge;
-   real2dHost angleEdge;
-   real2dHost cellQuality, triangleQuality, triangleAngleQuality;
-   real2dHost areaCell, areaTriangle;
-   real2dHost gridSpacing, meshDensity;
+   real1dHost xCell, yCell, zCell;
+   real1dHost lonCell, latCell;
+   real1dHost xEdge, yEdge, zEdge;
+   real1dHost lonEdge, latEdge;
+   real1dHost xVertex, yVertex, zVertex;
+   real1dHost lonVertex, latVertex;
+   real1dHost dcEdge, dvEdge;
+   real1dHost angleEdge;
+   real1dHost cellQuality, triangleQuality, triangleAngleQuality;
+   real1dHost areaCell, areaTriangle;
+   real1dHost gridSpacing, meshDensity;
    real2dHost kiteAreasOnVertex;
 
+   real2dHost edgeSignOnCell;
+
+
    void read(const char* mesh_file){
+     IO io;
      std::cout << mesh_file << "\n";
 
-     ncwrap(ncmpi_open(MPI_COMM_WORLD, mesh_file, NC_NOWRITE, MPI_INFO_NULL, &nc_id), __LINE__);
+     io.open(mesh_file);
+     nCells = io.read_dim("nCells", __LINE__);
+     nEdges = io.read_dim("nEdges", __LINE__);
+     nVertices = io.read_dim("nVertices", __LINE__);
+     maxEdges = io.read_dim("maxEdges", __LINE__);
+     maxEdges2 = io.read_dim("maxEdges2", __LINE__);
+     vertexDegree = io.read_dim("vertexDegree", __LINE__);
 
-     nCells = read_dim("nCells", __LINE__);
-     nEdges = read_dim("nEdges", __LINE__);
-     nVertices = read_dim("nVertices", __LINE__);
-     maxEdges = read_dim("maxEdges", __LINE__);
-     maxEdges2 = read_dim("maxEdges2", __LINE__);
-     vertexDegree = read_dim("vertexDegree", __LINE__);
+     xCell = io.read<real1dHost>("xCell", __LINE__); 
+     yCell = io.read<real1dHost>("yCell", __LINE__); 
+     zCell = io.read<real1dHost>("zCell", __LINE__); 
+     lonCell = io.read<real1dHost>("lonCell", __LINE__); 
+     latCell = io.read<real1dHost>("latCell", __LINE__); 
 
-     xCell = read_double_var("xCell", 1, nCells, __LINE__); 
-     yCell = read_double_var("yCell", 1, nCells, __LINE__); 
-     zCell = read_double_var("zCell", 1, nCells, __LINE__); 
-     lonCell = read_double_var("lonCell", 1, nCells, __LINE__); 
-     latCell = read_double_var("latCell", 1, nCells, __LINE__); 
+     xEdge = io.read<real1dHost>("xEdge", __LINE__); 
+     yEdge = io.read<real1dHost>("yEdge", __LINE__); 
+     zEdge = io.read<real1dHost>("zEdge", __LINE__); 
+     lonEdge = io.read<real1dHost>("lonEdge", __LINE__); 
+     latEdge = io.read<real1dHost>("latEdge", __LINE__); 
 
-     xEdge = read_double_var("xEdge", 1, nEdges, __LINE__); 
-     yEdge = read_double_var("yEdge", 1, nEdges, __LINE__); 
-     zEdge = read_double_var("zEdge", 1, nEdges, __LINE__); 
-     lonEdge = read_double_var("lonEdge", 1, nEdges, __LINE__); 
-     latEdge = read_double_var("latEdge", 1, nEdges, __LINE__); 
+     xVertex = io.read<real1dHost>("xVertex", __LINE__); 
+     yVertex = io.read<real1dHost>("yVertex", __LINE__); 
+     zVertex = io.read<real1dHost>("zVertex", __LINE__); 
+     lonVertex = io.read<real1dHost>("lonVertex", __LINE__); 
+     latVertex = io.read<real1dHost>("latVertex", __LINE__); 
 
-     xVertex = read_double_var("xVertex", 1, nVertices, __LINE__); 
-     yVertex = read_double_var("yVertex", 1, nVertices, __LINE__); 
-     zVertex = read_double_var("zVertex", 1, nVertices, __LINE__); 
-     lonVertex = read_double_var("lonVertex", 1, nVertices, __LINE__); 
-     latVertex = read_double_var("latVertex", 1, nVertices, __LINE__); 
+     weightsOnEdge = io.read<real2dHost>("weightsOnEdge", __LINE__); 
 
-     weightsOnEdge = read_double_var("weightsOnEdge", nEdges, maxEdges2, __LINE__); 
+     angleEdge = io.read<real1dHost>("angleEdge", __LINE__); 
+     dcEdge = io.read<real1dHost>("dcEdge", __LINE__); 
+     dvEdge = io.read<real1dHost>("dvEdge", __LINE__); 
 
-     angleEdge = read_double_var("angleEdge", 1, nEdges, __LINE__); 
-     dcEdge = read_double_var("dcEdge", 1, nEdges, __LINE__); 
-     dvEdge = read_double_var("dvEdge", 1, nEdges, __LINE__); 
+     kiteAreasOnVertex = io.read<real2dHost>("kiteAreasOnVertex", __LINE__); 
+     areaTriangle = io.read<real1dHost>("areaTriangle", __LINE__); 
+     areaCell= io.read<real1dHost>("areaCell", __LINE__); 
+     triangleQuality = io.read<real1dHost>("triangleQuality", __LINE__); 
+     triangleAngleQuality = io.read<real1dHost>("triangleAngleQuality", __LINE__); 
+     cellQuality = io.read<real1dHost>("cellQuality", __LINE__); 
+     gridSpacing = io.read<real1dHost>("gridSpacing", __LINE__); 
+     meshDensity = io.read<real1dHost>("meshDensity", __LINE__); 
 
-     kiteAreasOnVertex = read_double_var("kiteAreasOnVertex", nVertices, vertexDegree, __LINE__); 
-     areaTriangle = read_double_var("areaTriangle", 1, nVertices, __LINE__); 
-     areaCell= read_double_var("areaCell", 1, nCells, __LINE__); 
-     triangleQuality = read_double_var("triangleQuality", 1, nVertices, __LINE__); 
-     triangleAngleQuality = read_double_var("triangleAngleQuality", 1, nVertices, __LINE__); 
-     cellQuality = read_double_var("cellQuality", 1, nCells, __LINE__); 
-     gridSpacing = read_double_var("gridSpacing", 1, nCells, __LINE__); 
-     meshDensity = read_double_var("meshDensity", 1, nCells, __LINE__); 
+     edgesOnEdge = io.read<int2dHost>("edgesOnEdge", __LINE__); 
+     cellsOnEdge = io.read<int2dHost>("cellsOnEdge", __LINE__); 
+     verticesOnEdge = io.read<int2dHost>("verticesOnEdge", __LINE__); 
+     cellsOnVertex = io.read<int2dHost>("cellsOnVertex", __LINE__); 
+     edgesOnVertex = io.read<int2dHost>("edgesOnVertex", __LINE__); 
+     cellsOnCell = io.read<int2dHost>("cellsOnCell", __LINE__); 
+     edgesOnCell = io.read<int2dHost>("edgesOnCell", __LINE__); 
+     verticesOnCell = io.read<int2dHost>("verticesOnCell", __LINE__); 
+     nEdgesOnEdge = io.read<int1dHost>("nEdgesOnEdge", __LINE__); 
+     nEdgesOnCell = io.read<int1dHost>("nEdgesOnCell", __LINE__); 
 
-     edgesOnEdge = read_int_var("edgesOnEdge", nEdges, maxEdges2, __LINE__); 
-     cellsOnEdge = read_int_var("cellsOnEdge", nEdges, 2, __LINE__); 
-     verticesOnEdge = read_int_var("verticesOnEdge", nEdges, 2, __LINE__); 
-     cellsOnVertex = read_int_var("cellsOnVertex", nVertices, vertexDegree, __LINE__); 
-     edgesOnVertex = read_int_var("edgesOnVertex", nVertices, vertexDegree, __LINE__); 
-     cellsOnCell = read_int_var("cellsOnCell", nCells, maxEdges, __LINE__); 
-     edgesOnCell = read_int_var("edgesOnCell", nCells, maxEdges, __LINE__); 
-     verticesOnCell = read_int_var("verticesOnCell", nCells, maxEdges, __LINE__); 
-     nEdgesOnEdge = read_int_var("nEdgesOnEdge", 1, nEdges, __LINE__); 
-     nEdgesOnCell = read_int_var("nEdgesOnCell", 1, nCells, __LINE__); 
+     indexToEdgeID = io.read<int1dHost>("indexToEdgeID", __LINE__); 
+     indexToCellID = io.read<int1dHost>("indexToCellID", __LINE__); 
+     indexToVertexID = io.read<int1dHost>("indexToVertexID", __LINE__); 
 
-     indexToEdgeID = read_int_var("indexToEdgeID", 1, nEdges, __LINE__); 
-     indexToCellID = read_int_var("indexToCellID", 1, nCells, __LINE__); 
-     indexToVertexID = read_int_var("indexToVertexID", 1, nVertices, __LINE__); 
+     boundaryVertex = io.read<int1dHost>("boundaryVertex", __LINE__); 
+     obtuseTriangle = io.read<int1dHost>("obtuseTriangle", __LINE__); 
 
-     boundaryVertex = read_int_var("boundaryVertex", 1, nVertices, __LINE__); 
-     obtuseTriangle = read_int_var("obtuseTriangle", 1, nVertices, __LINE__); 
-
-
+     edgeSignOnCell = computeEdgeSign();
      
+     std::cout << "done reading mesh\n";
   }
 
 private:   
-  int nc_id;
 
-  void ncwrap(int err, int line) {
-    if (err != NC_NOERR) {
-      printf("NetCDF Error at line: %d\n", line);
-      printf("%s\n",ncmpi_strerror(err));
-      exit(-1);  
-    }
-  }
+  real2dHost computeEdgeSign(void) {
 
-  int read_dim(const char* dim_str, int line) {
-    int dim_id;
-    int dim;
-    MPI_Offset dim_read;
+    int iCell, jEdge;
+    int nEdge;
+    int j;
 
-    ncwrap(ncmpi_inq_dimid(nc_id, dim_str, &dim_id), line);
-    ncwrap(ncmpi_inq_dimlen(nc_id, dim_id, &dim_read), line);
-    dim = dim_read;
-   
-    std::cout << dim_str << ": " << dim << "\n";
+    edgeSignOnCell = real2dHost("edgeSignOnCell", maxEdges, nCells);
+    
+    for (iCell=0; iCell<nCells; iCell++) {
+      nEdge = nEdgesOnCell(iCell);
+      for (j=0; j<nEdge; j++) {
+        jEdge = edgesOnCell(j,iCell);
+        if (iCell == cellsOnEdge(1,jEdge)) {
+          edgeSignOnCell(j,iCell) = -1.0;
+        }
+        else {
+          edgeSignOnCell(j,iCell) = 1.0;
+        }
 
-    return dim;
-  }
-
-  real2dHost read_double_var(const char* var_str,  int dim1, int dim2, int line) {
-    int var_id;
-    int i, j, k;
-    real2dHost var;
-
-    ncwrap(ncmpi_inq_varid(nc_id, var_str, &var_id), line);
-    double buff[dim1*dim2];
-    ncwrap(ncmpi_get_var_double_all(nc_id, var_id, buff), line);
-    var = real2dHost(var_str, dim1, dim2);
-
-    std::cout << "\n";
-    std::cout << var_str << "\n";
-
-    k = 0;
-    for (j=0; j<dim1; j++) {
-      for (i=0; i<dim2; i++) {
-        var(j,i) = buff[k];
-        std::cout << var(j,i) << ", ";
-	k++;
       }
-      std::cout << "\n";
     }
-    return var;
-  }
 
-  int2dHost read_int_var(const char* var_str,  int dim1, int dim2, int line) {
-    int var_id;
-    int i, j, k;
-    int2dHost var;
+    return edgeSignOnCell;
 
-    ncwrap(ncmpi_inq_varid(nc_id, var_str, &var_id), line);
-    int buff[dim1*dim2];
-    ncwrap(ncmpi_get_var_int_all(nc_id, var_id, buff), line);
-    var = int2dHost(var_str, dim1, dim2);
-
-    std::cout << "\n";
-    std::cout << var_str << "\n";
-
-    k = 0;
-    for (j=0; j<dim1; j++) {
-      for (i=0; i<dim2; i++) {
-        var(j,i) = buff[k];
-        std::cout << var(j,i) << ", ";
-	k++;
-      }
-      std::cout << "\n";
-    }
-    return var;
   }
 
 };	
