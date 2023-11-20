@@ -39,6 +39,8 @@ int main (int argc, char **argv) {
   State state("initial_state.nc", mesh);
   
   MPI_Barrier(MPI_COMM_WORLD);
+  io.create("output.nc", state);
+  io.write(state);
 
   Timestep timestep(dt, mesh);
   
@@ -50,10 +52,9 @@ int main (int argc, char **argv) {
     timestep.RKStep(state, mesh, t);
 
     t = t + dt;
+    io.write(state);
   }
 
-  io.create("output.nc", state);
-  io.write(state);
 
   yakl::finalize();
   MPI_Finalize();

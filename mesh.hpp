@@ -1,5 +1,5 @@
 #include "const.h"
-#include "YAKL_netcdf.h"
+//#include "YAKL_netcdf.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -39,7 +39,7 @@ public:
 
    void read(const char* mesh_file){
      IO io;
-     yakl::SimpleNetCDF nc;
+     //yakl::SimpleNetCDF nc;
 
      std::cout << mesh_file << "\n";
 
