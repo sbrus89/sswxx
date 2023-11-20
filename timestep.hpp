@@ -92,17 +92,31 @@ public:
     int iEdge;
     int jLevel;
 
-    for (iCell=0; iCell<state.nCells; iCell++) {
-      for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-        state.layerThickness_new(iCell,jLevel) = state.layerThickness(iCell,jLevel) + b(stage)*dt*tend.layerThickness(iCell,jLevel);
+    if (stage==0) {
+      for (iCell=0; iCell<state.nCells; iCell++) {
+        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
+          state.layerThickness_new(iCell,jLevel) = state.layerThickness(iCell,jLevel) + b(stage)*dt*tend.layerThickness(iCell,jLevel);
+        }
       }
-    }
-    for (iEdge=0; iEdge<state.nEdges; iEdge++) {
-      for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-        state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
+      for (iEdge=0; iEdge<state.nEdges; iEdge++) {
+        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
+          state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
+        }
       }
-    }
 
+    }
+    else {
+      for (iCell=0; iCell<state.nCells; iCell++) {
+        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
+          state.layerThickness_new(iCell,jLevel) = state.layerThickness_new(iCell,jLevel) + b(stage)*dt*tend.layerThickness(iCell,jLevel);
+        }
+      }
+      for (iEdge=0; iEdge<state.nEdges; iEdge++) {
+        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
+          state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity_new(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
+        }
+      }
+  }
   }
 
 };	

@@ -36,11 +36,12 @@ public:
     }
   
     for (iCell=0; iCell<nCells; iCell++) {
-      for (i=0; iEdge<mesh.nEdgesOnCell(iCell); iEdge++) {
+      for (i=0; i<mesh.nEdgesOnCell(iCell); i++) {
         iEdge = mesh.edgesOnCell(iCell,i);
         cell2 = mesh.cellsOnCell(iCell,i);
         for (kLevel=0; kLevel<nVertLevels; kLevel++) {
-          hAvg = 0.5*(layerThickness_stage(iCell,kLevel) + layerThickness_stage(cell2,kLevel));
+          //hAvg = 0.5*(layerThickness_stage(iCell,kLevel) + layerThickness_stage(cell2,kLevel));
+          hAvg = 0.5*(mesh.bottomDepth(iCell) + mesh.bottomDepth(cell2));
           layerThickness(iCell,kLevel) = layerThickness(iCell,kLevel) + mesh.edgeSignOnCell(iCell,i)*hAvg*normalVelocity_stage(iEdge,kLevel)*mesh.dvEdge(iEdge)/mesh.areaCell(iCell);
         }
       }
@@ -78,7 +79,7 @@ public:
       
       
       for (kLevel=0; kLevel<nVertLevels; kLevel++) {
-        normalVelocity(iEdge,kLevel) = normalVelocity(iEdge,kLevel) + gravity*(ssh1-ssh2)/mesh.dcEdge(iEdge);
+        normalVelocity(iEdge,kLevel) = normalVelocity(iEdge,kLevel) - gravity*(ssh2-ssh1)/mesh.dcEdge(iEdge);
       }
     }
   

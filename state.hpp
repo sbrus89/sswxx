@@ -8,6 +8,7 @@ public:
 
   real2dHost layerThickness, layerThickness_new;
   real2dHost normalVelocity, normalVelocity_new;
+  real1dHost ssh;
 
   int nCells;
   int nEdges;
@@ -20,28 +21,25 @@ public:
     this->nEdges = mesh.nEdges;
     this->nVertLevels = mesh.nVertLevels;
 
-    std::cout << "Reading initial conditions\n";
-    std::cout << "  nCells: " << nCells << "\n";
-    std::cout << "  nEdges: " << nEdges << "\n";
-    std::cout << "  nVertLevels: " << nVertLevels << "\n";
+    std::cout << "Reading initial conditions" << std::endl;
+    std::cout << "  nCells: " << nCells << std::endl;
+    std::cout << "  nEdges: " << nEdges << std::endl;
+    std::cout << "  nVertLevels: " << nVertLevels << std::endl;
 
 
-    std::cout << "begin reading initial conditions\n";
+    std::cout << "begin reading initial conditions" << std::endl;
 
     io.open(mesh_file);
     layerThickness = io.read<real2dHost>("layerThickness", __LINE__);
     normalVelocity = io.read<real2dHost>("normalVelocity", __LINE__);
     io.close();
     
-    std::cout << "done with initial conditions\n";
+    std::cout << "done with initial conditions" << std::endl;
 
     layerThickness_new = real2dHost("layerThickness_new", nCells, nVertLevels);
     normalVelocity_new = real2dHost("normalVelocity_new", nEdges, nVertLevels);
+    ssh = real1dHost("ssh", nCells);
     
-
-  }
-
-  void halo_exchange() {
 
   }
 
@@ -64,6 +62,22 @@ public:
         normalVelocity_new(iEdge,kLevel) = 0.0;
       }
     }
+
+  }
+
+  void compute_ssh(Mesh &mesh) {
+  
+  int iCell;
+  int kLevel;
+  real totalThickness;
+
+  for (iCell=0; iCell<nCells; iCell++) {
+    totalThickness = 0.0;
+    for (kLevel=0; kLevel<nVertLevels; kLevel++) {
+      totalThickness = totalThickness + layerThickness(iCell,kLevel);
+    }
+    ssh(iCell) = totalThickness - mesh.bottomDepth(iCell);
+  }
 
   }
 

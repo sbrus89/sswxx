@@ -1,5 +1,4 @@
 #include "const.h"
-//#include "YAKL_netcdf.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -39,11 +38,9 @@ public:
 
    void read(const char* mesh_file){
      IO io;
-     //yakl::SimpleNetCDF nc;
 
-     std::cout << mesh_file << "\n";
+     std::cout << mesh_file << std::endl;
 
-     ///*
      io.open(mesh_file);
      nCells = io.read_dim("nCells", __LINE__);
      nEdges = io.read_dim("nEdges", __LINE__);
@@ -53,6 +50,7 @@ public:
      maxEdges2 = io.read_dim("maxEdges2", __LINE__);
      vertexDegree = io.read_dim("vertexDegree", __LINE__);
 
+     std::cout << "here" << std::endl;
      xCell = io.read<real1dHost>("xCell", __LINE__); 
      yCell = io.read<real1dHost>("yCell", __LINE__); 
      zCell = io.read<real1dHost>("zCell", __LINE__); 
@@ -112,79 +110,7 @@ public:
 
      io.close();
 
-     //*/
-
-     //nc.open(mesh_file);
-    
-     //nc.read(xCell, "xCell"); 
-     ////io.print_array(xCell);
-     //nc.read(yCell, "yCell"); 
-     //nc.read(zCell, "zCell"); 
-     //nc.read(lonCell, "lonCell"); 
-     //nc.read(latCell, "latCell"); 
-    
-     //nc.read(xEdge, "xEdge"); 
-     //nc.read(yEdge, "yEdge"); 
-     //nc.read(zEdge, "zEdge"); 
-     //nc.read(lonEdge, "lonEdge"); 
-     //nc.read(latEdge, "latEdge"); 
-    
-     //nc.read(xVertex, "xVertex"); 
-     //nc.read(yVertex, "yVertex"); 
-     //nc.read(zVertex, "zVertex"); 
-     //nc.read(lonVertex, "lonVertex"); 
-     //nc.read(latVertex, "latVertex"); 
-    
-     //nc.read(weightsOnEdge, "weightsOnEdge"); 
-    
-     //nc.read(angleEdge, "angleEdge"); 
-     //nc.read(dcEdge, "dcEdge"); 
-     //nc.read(dvEdge, "dvEdge"); 
-    
-     //nc.read(kiteAreasOnVertex, "kiteAreasOnVertex"); 
-     //nc.read(areaTriangle, "areaTriangle"); 
-     //nc.read(areaCell, "areaCell"); 
-     //nc.read(triangleQuality, "triangleQuality"); 
-     //nc.read(triangleAngleQuality, "triangleAngleQuality"); 
-     //nc.read(cellQuality, "cellQuality"); 
-     //nc.read(gridSpacing, "gridSpacing"); 
-     //nc.read(meshDensity, "meshDensity"); 
-    
-     //nc.read(edgesOnEdge, "edgesOnEdge"); 
-     //nc.read(cellsOnEdge, "cellsOnEdge"); 
-     //nc.read(verticesOnEdge, "verticesOnEdge"); 
-     //nc.read(cellsOnVertex, "cellsOnVertex"); 
-     //nc.read(edgesOnVertex, "edgesOnVertex"); 
-     //nc.read(cellsOnCell, "cellsOnCell"); 
-     //nc.read(edgesOnCell, "edgesOnCell"); 
-     //nc.read(verticesOnCell, "verticesOnCell"); 
-     //nc.read(nEdgesOnEdge, "nEdgesOnEdge"); 
-     //nc.read(nEdgesOnCell, "nEdgesOnCell"); 
-    
-     //nc.read(indexToEdgeID, "indexToEdgeID"); 
-     //nc.read(indexToCellID, "indexToCellID"); 
-     //nc.read(indexToVertexID, "indexToVertexID"); 
-    
-     //nc.read(boundaryVertex, "boundaryVertex"); 
-     //nc.read(obtuseTriangle, "obtuseTriangle"); 
-    
-     //nc.read(fEdge, "fEdge"); 
-     //nc.read(fCell, "fCell"); 
-     //nc.read(fVertex, "fVertex"); 
-    
-     //nc.read(bottomDepth, "bottomDepth"); 
-
-     //nc.close();
-
-     //nCells = xCell.dimension[0];
-     //nEdges = xEdge.dimension[0];
-     //nVertices = xVertex.dimension[0];
-     //maxEdges = cellsOnCell.dimension[1];
-     //maxEdges2 = edgesOnEdge.dimension[1];
-     //vertexDegree = cellsOnVertex.dimension[1];
-     //nVertLevels = 1;
-
-     std::cout << "done reading mesh\n";
+     std::cout << "done reading mesh" << std::endl;
 
      fixIndices();
      edgeSignOnCell = computeEdgeSign();
@@ -205,7 +131,7 @@ private:
       nEdge = nEdgesOnCell(iCell);
       for (j=0; j<nEdge; j++) {
         jEdge = edgesOnCell(iCell,j);
-        if (iCell == cellsOnEdge(jEdge,1)) {
+        if (iCell == cellsOnEdge(jEdge,0)) {
           edgeSignOnCell(iCell,j) = -1.0;
         }
         else {
