@@ -3,10 +3,10 @@
 #include <mpi.h>
 #include "const.h"
 #include "pnetcdf.h"
+#include "io.hpp"
 #include "mesh.hpp"
 #include "state.hpp"
 #include "timestep.hpp"
-//#include "tendency.hpp"
 #include <ctime>
 #include <chrono>
 
@@ -16,6 +16,7 @@ int main (int argc, char **argv) {
   int myrank;
   real dt, t;
   real end_time;
+  IO io;
 
   end_time = 10.0*3600.0;
   dt = 20.0*60.0;
@@ -50,6 +51,9 @@ int main (int argc, char **argv) {
 
     t = t + dt;
   }
+
+  io.create("output.nc", state);
+  io.write(state);
 
   yakl::finalize();
   MPI_Finalize();

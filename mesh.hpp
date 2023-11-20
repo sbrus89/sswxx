@@ -1,5 +1,4 @@
 #include "const.h"
-#include "io.hpp"
 #include "YAKL_netcdf.h"
 #include <stdlib.h>
 #include <stdio.h>

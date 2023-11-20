@@ -5,6 +5,15 @@ public:
 
   int nc_id;
 
+  int t_dimid;
+  int cell_dimid;
+  int edge_dimid;
+  int layer_dimid;
+  int layerThickness_varid;
+  int normalVelocity_varid;
+
+  int output_count;
+
   void open(const char* nc_file) {
     ncwrap(ncmpi_open(MPI_COMM_WORLD, nc_file, NC_NOWRITE, MPI_INFO_NULL, &nc_id), __LINE__);
   }
@@ -102,10 +111,56 @@ public:
       exit(-1);
     }
 
-    print_array(var);
+    //print_array(var);
 
     return var;
 
+  }
+
+  template <class T> 
+  void create(const char* nc_file, T &mesh) {
+
+    int dimids[3];
+
+    ncwrap(ncmpi_create(MPI_COMM_WORLD, nc_file, NC_NOWRITE, MPI_INFO_NULL, &nc_id), __LINE__);
+
+    ncwrap(ncmpi_def_dim(nc_id, "Time", (MPI_Offset) NC_UNLIMITED, &t_dimid), __LINE__);
+    ncwrap(ncmpi_def_dim(nc_id, "nCells", (MPI_Offset) mesh.nCells, &cell_dimid), __LINE__);
+    ncwrap(ncmpi_def_dim(nc_id, "nEdges", (MPI_Offset) mesh.nEdges, &edge_dimid), __LINE__);
+    ncwrap(ncmpi_def_dim(nc_id, "nVertLayers", (MPI_Offset) mesh.nVertLevels, &layer_dimid), __LINE__);
+
+    dimids[0] = t_dimid;
+    dimids[1] = cell_dimid;
+    dimids[2] = layer_dimid;
+
+    ncwrap(ncmpi_def_var(nc_id, "layerThickness", NC_DOUBLE, 3, dimids, &layerThickness_varid), __LINE__);
+    dimids[1] = edge_dimid;
+    ncwrap(ncmpi_def_var(nc_id, "normalVelocity", NC_DOUBLE, 3, dimids, &normalVelocity_varid), __LINE__);
+
+    ncwrap(ncmpi_enddef(nc_id), __LINE__);
+
+    output_count = 0;
+
+  }
+
+  template <class T> 
+  void write(T &state) {
+
+    MPI_Offset st3[3], ct3[3];
+
+    st3[0] = output_count;
+    st3[1] = 0;
+    st3[2] = 0;
+
+    ct3[0] = 1;
+    ct3[1] = state.nCells;
+    ct3[2] = state.nVertLevels;
+
+    ncwrap(ncmpi_put_vara_double_all(nc_id,  layerThickness_varid, st3, ct3, state.layerThickness.data()) , __LINE__);
+    ct3[1] = state.nEdges;
+    ncwrap(ncmpi_put_vara_double_all(nc_id,  normalVelocity_varid, st3, ct3, state.normalVelocity.data()) , __LINE__);
+
+    output_count = output_count + 1;
   }
 
   void print_array(int1dHost var) {

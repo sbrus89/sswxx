@@ -15,7 +15,6 @@ public:
 
   State (const char *mesh_file, Mesh &mesh) {
     IO io;
-    //yakl::SimpleNetCDF nc;
 
     this->nCells = mesh.nCells;
     this->nEdges = mesh.nEdges;
@@ -34,12 +33,6 @@ public:
     normalVelocity = io.read<real2dHost>("normalVelocity", __LINE__);
     io.close();
     
-    //nc.open(mesh_file);
-    //nc.read(layerThickness, "layerThickness");
-    //nc.read(normalVelocity, "normalVelocity");
-    //nc.close();
-
-
     std::cout << "done with initial conditions\n";
 
     layerThickness_new = real2dHost("layerThickness_new", nCells, nVertLevels);
