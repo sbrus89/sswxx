@@ -38,7 +38,7 @@ public:
     for (iCell=0; iCell<nCells; iCell++) {
       for (i=0; iEdge<mesh.nEdgesOnCell(iCell); iEdge++) {
         iEdge = mesh.edgesOnCell(iCell,i);
-        cell2 = mesh.cellsOnCell(iCell,iEdge);
+        cell2 = mesh.cellsOnCell(iCell,i);
         for (kLevel=0; kLevel<nVertLevels; kLevel++) {
           hAvg = 0.5*(layerThickness_stage(iCell,kLevel) + layerThickness_stage(cell2,kLevel));
           layerThickness(iCell,kLevel) = layerThickness(iCell,kLevel) + mesh.edgeSignOnCell(iCell,i)*hAvg*normalVelocity_stage(iEdge,kLevel)*mesh.dvEdge(iEdge)/mesh.areaCell(iCell);
@@ -83,7 +83,7 @@ public:
     }
   
     for (iEdge=0; iEdge<nEdges; iEdge++) {
-      for (j=0; j<mesh.nEdgesOnEdge(i); j++) {
+      for (j=0; j<mesh.nEdgesOnEdge(iEdge); j++) {
         eoe = mesh.edgesOnEdge(iEdge,j);
         for (kLevel=0; kLevel<nVertLevels; kLevel++) {
           normalVelocity(iEdge,kLevel) = normalVelocity(iEdge,kLevel) + mesh.weightsOnEdge(iEdge,j)*normalVelocity_stage(eoe,kLevel)*mesh.fEdge(eoe);

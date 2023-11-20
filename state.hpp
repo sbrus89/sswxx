@@ -1,4 +1,5 @@
 #include "const.h"
+#include "YAKL_netcdf.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -7,13 +8,14 @@ public:
 
   real2dHost layerThickness, layerThickness_new;
   real2dHost normalVelocity, normalVelocity_new;
-  IO io;
 
   int nCells;
   int nEdges;
   int nVertLevels;
 
-  void init(const char *mesh_file, Mesh &mesh) {
+  State (const char *mesh_file, Mesh &mesh) {
+    IO io;
+    //yakl::SimpleNetCDF nc;
 
     this->nCells = mesh.nCells;
     this->nEdges = mesh.nEdges;
@@ -24,19 +26,25 @@ public:
     std::cout << "  nEdges: " << nEdges << "\n";
     std::cout << "  nVertLevels: " << nVertLevels << "\n";
 
-    io.open(mesh_file);
 
     std::cout << "begin reading initial conditions\n";
 
+    io.open(mesh_file);
     layerThickness = io.read<real2dHost>("layerThickness", __LINE__);
     normalVelocity = io.read<real2dHost>("normalVelocity", __LINE__);
-
     io.close();
+    
+    //nc.open(mesh_file);
+    //nc.read(layerThickness, "layerThickness");
+    //nc.read(normalVelocity, "normalVelocity");
+    //nc.close();
+
 
     std::cout << "done with initial conditions\n";
 
     layerThickness_new = real2dHost("layerThickness_new", nCells, nVertLevels);
     normalVelocity_new = real2dHost("normalVelocity_new", nEdges, nVertLevels);
+    
 
   }
 

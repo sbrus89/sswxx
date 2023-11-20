@@ -10,12 +10,12 @@ public:
 
   real1dHost a, b, c;
   double dt;
-  //Tendency tend;
+  Tendency tend;
   int nStage;
   real2dHost layerThickness_stage;
   real2dHost normalVelocity_stage;
 
-  Timestep (double dt, Mesh &mesh){//: tend(mesh) {
+  Timestep (double dt, Mesh &mesh): tend(mesh) {
 
     nStage = 4;
      
@@ -50,10 +50,10 @@ public:
     int iStage;
 
     for (iStage=0; iStage<nStage; iStage++) {
-      //compute_stage(iStage, t, state, mesh);
+      compute_stage(iStage, t, state, mesh);
     }
 
-    //state.update_time_level();
+    state.update_time_level();
 
   }
 
@@ -65,44 +65,44 @@ public:
 
     for (iCell=0; iCell<mesh.nCells; iCell++) {
       for (jLevel=0; jLevel<mesh.nVertLevels; jLevel++) {
-        layerThickness_stage(iCell,jLevel) = 0.0; //state.layerThickness(iCell,jLevel); //+ a(stage)*tend.layerThickness(iCell,jLevel);
+        layerThickness_stage(iCell,jLevel) = state.layerThickness(iCell,jLevel) + a(stage)*dt*tend.layerThickness(iCell,jLevel);
       }
     }
     for (iEdge=0; iEdge<mesh.nEdges; iEdge++) {
       for (jLevel=0; jLevel<mesh.nVertLevels; jLevel++) {
-        normalVelocity_stage(iEdge,jLevel) = 0.0; //state.normalVelocity(iCell,jLevel); //+ a(stage)*tend.normalVelocity(iEdge,jLevel);
+        normalVelocity_stage(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel) + a(stage)*dt*tend.normalVelocity(iEdge,jLevel);
       }
     }
 
-    //compute_tendencies(mesh, t+c(stage)*dt);
-    //accumulate_stage(stage, state);
+    compute_tendencies(mesh, t+c(stage)*dt);
+    accumulate_stage(stage, state);
 
   }
 
-//  void compute_tendencies(Mesh &mesh, double t) {
-//
-//   tend.layerThicknessTendencies(mesh, layerThickness_stage, normalVelocity_stage, t);
-//   tend.normalVelocityTendencies(mesh, layerThickness_stage, normalVelocity_stage, t);
-//
-//  }
+  void compute_tendencies(Mesh &mesh, double t) {
 
-//  void accumulate_stage(int stage, State &state) {
-//
-//    int iCell;
-//    int iEdge;
-//    int jLevel;
-//
-//    for (iCell=0; iCell<state.nCells; iCell++) {
-//      for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-//        state.layerThickness_new(iCell,jLevel) = state.layerThickness(iCell,jLevel); //+ b(stage)*dt*tend.layerThickness(iCell,jLevel);
-//      }
-//    }
-//    for (iEdge=0; iCell<state.nEdges; iEdge++) {
-//      for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-//        state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel); //+ b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
-//      }
-//    }
-//
-//  }
+   tend.layerThicknessTendencies(mesh, layerThickness_stage, normalVelocity_stage, t);
+   tend.normalVelocityTendencies(mesh, layerThickness_stage, normalVelocity_stage, t);
+
+  }
+
+  void accumulate_stage(int stage, State &state) {
+
+    int iCell;
+    int iEdge;
+    int jLevel;
+
+    for (iCell=0; iCell<state.nCells; iCell++) {
+      for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
+        state.layerThickness_new(iCell,jLevel) = state.layerThickness(iCell,jLevel) + b(stage)*dt*tend.layerThickness(iCell,jLevel);
+      }
+    }
+    for (iEdge=0; iEdge<state.nEdges; iEdge++) {
+      for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
+        state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
+      }
+    }
+
+  }
 
 };	

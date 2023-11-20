@@ -35,11 +35,10 @@ int main (int argc, char **argv) {
   Mesh mesh;
   mesh.read("initial_state.nc");
 
+  State state("initial_state.nc", mesh);
+  
   MPI_Barrier(MPI_COMM_WORLD);
 
-  State state;
-  state.init("initial_state.nc", mesh);
-  
   Timestep timestep(dt, mesh);
   
   yakl::fence();

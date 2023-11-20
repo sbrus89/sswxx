@@ -1,6 +1,6 @@
 #include "const.h"
 #include "io.hpp"
-//#include "YAKL_netcdf.h"
+#include "YAKL_netcdf.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -40,7 +40,7 @@ public:
 
    void read(const char* mesh_file){
      IO io;
-     //yakl::SimpleNetCDF nc;
+     yakl::SimpleNetCDF nc;
 
      std::cout << mesh_file << "\n";
 
@@ -115,70 +115,79 @@ public:
 
      //*/
 
-     /*
-     nc.open(mesh_file);
+     //nc.open(mesh_file);
     
-     nc.read(xCell, "xCell"); 
-     //io.print_array(xCell);
-     nc.read(yCell, "yCell"); 
-     nc.read(zCell, "zCell"); 
-     nc.read(lonCell, "lonCell"); 
-     nc.read(latCell, "latCell"); 
+     //nc.read(xCell, "xCell"); 
+     ////io.print_array(xCell);
+     //nc.read(yCell, "yCell"); 
+     //nc.read(zCell, "zCell"); 
+     //nc.read(lonCell, "lonCell"); 
+     //nc.read(latCell, "latCell"); 
     
-     nc.read(xEdge, "xEdge"); 
-     nc.read(yEdge, "yEdge"); 
-     nc.read(zEdge, "zEdge"); 
-     nc.read(lonEdge, "lonEdge"); 
-     nc.read(latEdge, "latEdge"); 
+     //nc.read(xEdge, "xEdge"); 
+     //nc.read(yEdge, "yEdge"); 
+     //nc.read(zEdge, "zEdge"); 
+     //nc.read(lonEdge, "lonEdge"); 
+     //nc.read(latEdge, "latEdge"); 
     
-     nc.read(xVertex, "xVertex"); 
-     nc.read(yVertex, "yVertex"); 
-     nc.read(zVertex, "zVertex"); 
-     nc.read(lonVertex, "lonVertex"); 
-     nc.read(latVertex, "latVertex"); 
+     //nc.read(xVertex, "xVertex"); 
+     //nc.read(yVertex, "yVertex"); 
+     //nc.read(zVertex, "zVertex"); 
+     //nc.read(lonVertex, "lonVertex"); 
+     //nc.read(latVertex, "latVertex"); 
     
-     nc.read(weightsOnEdge, "weightsOnEdge"); 
+     //nc.read(weightsOnEdge, "weightsOnEdge"); 
     
-     nc.read(angleEdge, "angleEdge"); 
-     nc.read(dcEdge, "dcEdge"); 
-     nc.read(dvEdge, "dvEdge"); 
+     //nc.read(angleEdge, "angleEdge"); 
+     //nc.read(dcEdge, "dcEdge"); 
+     //nc.read(dvEdge, "dvEdge"); 
     
-     nc.read(kiteAreasOnVertex, "kiteAreasOnVertex"); 
-     nc.read(areaTriangle, "areaTriangle"); 
-     nc.read(areaCell, "areaCell"); 
-     nc.read(triangleQuality, "triangleQuality"); 
-     nc.read(triangleAngleQuality, "triangleAngleQuality"); 
-     nc.read(cellQuality, "cellQuality"); 
-     nc.read(gridSpacing, "gridSpacing"); 
-     nc.read(meshDensity, "meshDensity"); 
+     //nc.read(kiteAreasOnVertex, "kiteAreasOnVertex"); 
+     //nc.read(areaTriangle, "areaTriangle"); 
+     //nc.read(areaCell, "areaCell"); 
+     //nc.read(triangleQuality, "triangleQuality"); 
+     //nc.read(triangleAngleQuality, "triangleAngleQuality"); 
+     //nc.read(cellQuality, "cellQuality"); 
+     //nc.read(gridSpacing, "gridSpacing"); 
+     //nc.read(meshDensity, "meshDensity"); 
     
-     nc.read(edgesOnEdge, "edgesOnEdge"); 
-     nc.read(cellsOnEdge, "cellsOnEdge"); 
-     nc.read(verticesOnEdge, "verticesOnEdge"); 
-     nc.read(cellsOnVertex, "cellsOnVertex"); 
-     nc.read(edgesOnVertex, "edgesOnVertex"); 
-     nc.read(cellsOnCell, "cellsOnCell"); 
-     nc.read(edgesOnCell, "edgesOnCell"); 
-     nc.read(verticesOnCell, "verticesOnCell"); 
-     nc.read(nEdgesOnEdge, "nEdgesOnEdge"); 
-     nc.read(nEdgesOnCell, "nEdgesOnCell"); 
+     //nc.read(edgesOnEdge, "edgesOnEdge"); 
+     //nc.read(cellsOnEdge, "cellsOnEdge"); 
+     //nc.read(verticesOnEdge, "verticesOnEdge"); 
+     //nc.read(cellsOnVertex, "cellsOnVertex"); 
+     //nc.read(edgesOnVertex, "edgesOnVertex"); 
+     //nc.read(cellsOnCell, "cellsOnCell"); 
+     //nc.read(edgesOnCell, "edgesOnCell"); 
+     //nc.read(verticesOnCell, "verticesOnCell"); 
+     //nc.read(nEdgesOnEdge, "nEdgesOnEdge"); 
+     //nc.read(nEdgesOnCell, "nEdgesOnCell"); 
     
-     nc.read(indexToEdgeID, "indexToEdgeID"); 
-     nc.read(indexToCellID, "indexToCellID"); 
-     nc.read(indexToVertexID, "indexToVertexID"); 
+     //nc.read(indexToEdgeID, "indexToEdgeID"); 
+     //nc.read(indexToCellID, "indexToCellID"); 
+     //nc.read(indexToVertexID, "indexToVertexID"); 
     
-     nc.read(boundaryVertex, "boundaryVertex"); 
-     nc.read(obtuseTriangle, "obtuseTriangle"); 
+     //nc.read(boundaryVertex, "boundaryVertex"); 
+     //nc.read(obtuseTriangle, "obtuseTriangle"); 
     
-     nc.read(fEdge, "fEdge"); 
-     nc.read(fCell, "fCell"); 
-     nc.read(fVertex, "fVertex"); 
+     //nc.read(fEdge, "fEdge"); 
+     //nc.read(fCell, "fCell"); 
+     //nc.read(fVertex, "fVertex"); 
     
-     nc.read(bottomDepth, "bottomDepth"); 
-     */
+     //nc.read(bottomDepth, "bottomDepth"); 
+
+     //nc.close();
+
+     //nCells = xCell.dimension[0];
+     //nEdges = xEdge.dimension[0];
+     //nVertices = xVertex.dimension[0];
+     //maxEdges = cellsOnCell.dimension[1];
+     //maxEdges2 = edgesOnEdge.dimension[1];
+     //vertexDegree = cellsOnVertex.dimension[1];
+     //nVertLevels = 1;
 
      std::cout << "done reading mesh\n";
 
+     fixIndices();
      edgeSignOnCell = computeEdgeSign();
      
   }
@@ -196,8 +205,8 @@ private:
     for (iCell=0; iCell<nCells; iCell++) {
       nEdge = nEdgesOnCell(iCell);
       for (j=0; j<nEdge; j++) {
-        jEdge = edgesOnCell(j,iCell);
-        if (iCell == cellsOnEdge(1,jEdge)) {
+        jEdge = edgesOnCell(iCell,j);
+        if (iCell == cellsOnEdge(jEdge,1)) {
           edgeSignOnCell(iCell,j) = -1.0;
         }
         else {
@@ -210,5 +219,37 @@ private:
     return edgeSignOnCell;
 
   }
+
+  void fixIndices(void) {
+
+    int iCell, iEdge, iVertex;
+    int j;
+
+    for (iCell=0; iCell<nCells; iCell++) {
+       for (j=0; j<maxEdges; j++) {
+          cellsOnCell(iCell, j) = cellsOnCell(iCell, j) - 1;
+          edgesOnCell(iCell, j) = edgesOnCell(iCell, j) - 1;
+          verticesOnCell(iCell, j) = verticesOnCell(iCell, j) - 1;
+       }
+    }
+
+   for (iEdge=0; iEdge<nEdges; iEdge++) {
+      for(j=0; j<maxEdges2; j++) {
+         edgesOnEdge(iEdge, j) = edgesOnEdge(iEdge, j) - 1;
+      }
+      for (j=0; j<2; j++) {
+         cellsOnEdge(iEdge, j) = cellsOnEdge(iEdge, j) - 1;
+         verticesOnEdge(iEdge, j) = verticesOnEdge(iEdge, j) - 1;
+      }
+   }
+
+   for (iVertex=0; iVertex<nVertices; iVertex++) {
+      for (j=0; j<vertexDegree; j++) {
+         cellsOnVertex(iVertex, j) = cellsOnVertex(iVertex, j) - 1;
+         edgesOnVertex(iVertex, j) = edgesOnVertex(iVertex, j) - 1;
+      }
+   }
+  }
+
 
 };	
