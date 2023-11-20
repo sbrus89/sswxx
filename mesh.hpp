@@ -48,7 +48,6 @@ public:
      IO io;
 
      std::cout << mesh_file << std::endl;
-
      io.open(mesh_file);
      nCells = io.read_dim("nCells", __LINE__);
      nEdges = io.read_dim("nEdges", __LINE__);
@@ -58,63 +57,63 @@ public:
      maxEdges2 = io.read_dim("maxEdges2", __LINE__);
      vertexDegree = io.read_dim("vertexDegree", __LINE__);
 
-     xCell = io.read<real1d>("xCell", __LINE__); 
-     yCell = io.read<real1d>("yCell", __LINE__); 
-     zCell = io.read<real1d>("zCell", __LINE__); 
-     lonCell = io.read<real1d>("lonCell", __LINE__); 
-     latCell = io.read<real1d>("latCell", __LINE__); 
+     std::cout << "begin reading arrays" << std::endl;
+     io.read<real1d>("xCell", xCell, __LINE__); 
+     io.read<real1d>("yCell", yCell, __LINE__); 
+     io.read<real1d>("zCell", zCell, __LINE__); 
+     io.read<real1d>("lonCell", lonCell, __LINE__); 
+     io.read<real1d>("latCell", latCell, __LINE__); 
 
-     xEdge = io.read<real1d>("xEdge", __LINE__); 
-     yEdge = io.read<real1d>("yEdge", __LINE__); 
-     zEdge = io.read<real1d>("zEdge", __LINE__); 
-     lonEdge = io.read<real1d>("lonEdge", __LINE__); 
-     latEdge = io.read<real1d>("latEdge", __LINE__); 
+     io.read<real1d>("xEdge", xEdge, __LINE__); 
+     io.read<real1d>("yEdge", yEdge, __LINE__); 
+     io.read<real1d>("zEdge", zEdge, __LINE__); 
+     io.read<real1d>("lonEdge", lonEdge, __LINE__); 
+     io.read<real1d>("latEdge", latEdge, __LINE__); 
 
-     xVertex = io.read<real1d>("xVertex", __LINE__); 
-     yVertex = io.read<real1d>("yVertex", __LINE__); 
-     zVertex = io.read<real1d>("zVertex", __LINE__); 
-     lonVertex = io.read<real1d>("lonVertex", __LINE__); 
-     latVertex = io.read<real1d>("latVertex", __LINE__); 
+     io.read<real1d>("xVertex", xVertex, __LINE__); 
+     io.read<real1d>("yVertex", yVertex, __LINE__); 
+     io.read<real1d>("zVertex", zVertex, __LINE__); 
+     io.read<real1d>("lonVertex", lonVertex, __LINE__); 
+     io.read<real1d>("latVertex", latVertex, __LINE__); 
 
-     weightsOnEdge = io.read<real2d>("weightsOnEdge", __LINE__); 
+     io.read<real2d>("weightsOnEdge", weightsOnEdge, __LINE__); 
 
-     angleEdge = io.read<real1d>("angleEdge", __LINE__); 
-     dcEdge = io.read<real1d>("dcEdge", __LINE__); 
-     dvEdge = io.read<real1d>("dvEdge", __LINE__); 
+     io.read<real1d>("angleEdge", angleEdge, __LINE__); 
+     io.read<real1d>("dcEdge", dcEdge, __LINE__); 
+     io.read<real1d>("dvEdge", dvEdge, __LINE__); 
 
-     kiteAreasOnVertex = io.read<real2d>("kiteAreasOnVertex", __LINE__); 
-     areaTriangle = io.read<real1d>("areaTriangle", __LINE__); 
-     areaCell= io.read<real1d>("areaCell", __LINE__); 
-     triangleQuality = io.read<real1d>("triangleQuality", __LINE__); 
-     triangleAngleQuality = io.read<real1d>("triangleAngleQuality", __LINE__); 
-     cellQuality = io.read<real1d>("cellQuality", __LINE__); 
-     gridSpacing = io.read<real1d>("gridSpacing", __LINE__); 
-     meshDensity = io.read<real1d>("meshDensity", __LINE__); 
+     io.read<real2d>("kiteAreasOnVertex", kiteAreasOnVertex, __LINE__); 
+     io.read<real1d>("areaTriangle", areaTriangle, __LINE__); 
+     io.read<real1d>("areaCell", areaCell, __LINE__); 
+     io.read<real1d>("triangleQuality", triangleQuality, __LINE__); 
+     io.read<real1d>("triangleAngleQuality", triangleAngleQuality, __LINE__); 
+     io.read<real1d>("cellQuality", cellQuality, __LINE__); 
+     io.read<real1d>("gridSpacing", gridSpacing, __LINE__); 
+     io.read<real1d>("meshDensity", meshDensity, __LINE__); 
 
-     edgesOnEdge = io.read<int2d>("edgesOnEdge", __LINE__); 
-     cellsOnEdge = io.read<int2d>("cellsOnEdge", __LINE__); 
-     verticesOnEdge = io.read<int2d>("verticesOnEdge", __LINE__); 
-     cellsOnVertex = io.read<int2d>("cellsOnVertex", __LINE__); 
-     edgesOnVertex = io.read<int2d>("edgesOnVertex", __LINE__); 
-     cellsOnCell = io.read<int2d>("cellsOnCell", __LINE__); 
-     edgesOnCell = io.read<int2d>("edgesOnCell", __LINE__); 
-     verticesOnCell = io.read<int2d>("verticesOnCell", __LINE__); 
-     nEdgesOnEdge = io.read<int1d>("nEdgesOnEdge", __LINE__); 
-     nEdgesOnCell = io.read<int1d>("nEdgesOnCell", __LINE__); 
+     io.read<int2d>("edgesOnEdge", edgesOnEdge, __LINE__); 
+     io.read<int2d>("cellsOnEdge", cellsOnEdge, __LINE__); 
+     io.read<int2d>("verticesOnEdge", verticesOnEdge, __LINE__); 
+     io.read<int2d>("cellsOnVertex", cellsOnVertex, __LINE__); 
+     io.read<int2d>("edgesOnVertex", edgesOnVertex, __LINE__); 
+     io.read<int2d>("cellsOnCell", cellsOnCell, __LINE__); 
+     io.read<int2d>("edgesOnCell", edgesOnCell, __LINE__); 
+     io.read<int2d>("verticesOnCell", verticesOnCell, __LINE__); 
+     io.read<int1d>("nEdgesOnEdge", nEdgesOnEdge, __LINE__); 
+     io.read<int1d>("nEdgesOnCell", nEdgesOnCell, __LINE__); 
 
-     indexToEdgeID = io.read<int1d>("indexToEdgeID", __LINE__); 
-     indexToCellID = io.read<int1d>("indexToCellID", __LINE__); 
-     indexToVertexID = io.read<int1d>("indexToVertexID", __LINE__); 
+     io.read<int1d>("indexToEdgeID", indexToEdgeID, __LINE__); 
+     io.read<int1d>("indexToCellID", indexToCellID, __LINE__); 
+     io.read<int1d>("indexToVertexID", indexToVertexID, __LINE__); 
 
-     boundaryVertex = io.read<int1d>("boundaryVertex", __LINE__); 
-     obtuseTriangle = io.read<int1d>("obtuseTriangle", __LINE__); 
+     io.read<int1d>("boundaryVertex", boundaryVertex, __LINE__); 
+     io.read<int1d>("obtuseTriangle", obtuseTriangle, __LINE__); 
 
-     fEdge = io.read<real1d>("fEdge", __LINE__); 
-     fCell= io.read<real1d>("fCell", __LINE__); 
-     fVertex= io.read<real1d>("fVertex", __LINE__); 
+     io.read<real1d>("fEdge", fEdge, __LINE__); 
+     io.read<real1d>("fCell", fCell, __LINE__); 
+     io.read<real1d>("fVertex", fVertex, __LINE__); 
 
-     bottomDepth= io.read<real1d>("bottomDepth", __LINE__); 
-
+     io.read<real1d>("bottomDepth", bottomDepth, __LINE__); 
      io.close();
 
      std::cout << "done reading mesh" << std::endl;
@@ -122,6 +121,78 @@ public:
      fixIndices();
      computeEdgeSign();
      
+  }
+
+  template<int N>
+  void copy_to_device(Mesh<N> &mesh) {
+
+     mesh.nCells = nCells;
+     mesh.nEdges = nEdges;
+     mesh.nVertices = nVertices;
+     mesh.nVertLevels = nVertLevels;
+     mesh.maxEdges = maxEdges;
+     mesh.maxEdges2 = maxEdges2;
+     mesh.vertexDegree = vertexDegree;
+
+     mesh.xCell = xCell.createDeviceCopy();
+     mesh.yCell = yCell.createDeviceCopy();
+     mesh.zCell = zCell.createDeviceCopy();
+     mesh.lonCell = lonCell.createDeviceCopy();
+     mesh.latCell = latCell.createDeviceCopy();
+
+     mesh.xEdge = xEdge.createDeviceCopy();
+     mesh.yEdge = yEdge.createDeviceCopy();
+     mesh.zEdge = zEdge.createDeviceCopy();
+     mesh.lonEdge = lonEdge.createDeviceCopy();
+     mesh.latEdge = latEdge.createDeviceCopy();
+
+     mesh.xVertex = xVertex.createDeviceCopy();
+     mesh.yVertex = yVertex.createDeviceCopy();
+     mesh.zVertex = zVertex.createDeviceCopy();
+     mesh.lonVertex = lonVertex.createDeviceCopy();
+     mesh.latVertex = latVertex.createDeviceCopy();
+
+     mesh.weightsOnEdge = weightsOnEdge.createDeviceCopy();
+
+     mesh.angleEdge = angleEdge.createDeviceCopy();
+     mesh.dcEdge = dcEdge.createDeviceCopy();
+     mesh.dvEdge = dvEdge.createDeviceCopy();
+
+     mesh.kiteAreasOnVertex = kiteAreasOnVertex.createDeviceCopy();
+     mesh.areaTriangle = areaTriangle.createDeviceCopy();
+     mesh.areaCell = areaCell.createDeviceCopy();
+     mesh.triangleQuality = triangleQuality.createDeviceCopy();
+     mesh.triangleAngleQuality = triangleAngleQuality.createDeviceCopy();
+     mesh.cellQuality = cellQuality.createDeviceCopy();
+     mesh.gridSpacing = gridSpacing.createDeviceCopy();
+     mesh.meshDensity = meshDensity.createDeviceCopy();
+
+     mesh.edgesOnEdge = edgesOnEdge.createDeviceCopy();
+     mesh.cellsOnEdge = cellsOnEdge.createDeviceCopy();
+     mesh.verticesOnEdge = verticesOnEdge.createDeviceCopy();
+     mesh.cellsOnVertex = cellsOnVertex.createDeviceCopy();
+     mesh.edgesOnVertex = edgesOnVertex.createDeviceCopy();
+     mesh.cellsOnCell = cellsOnCell.createDeviceCopy();
+     mesh.edgesOnCell = edgesOnCell.createDeviceCopy();
+     mesh.verticesOnCell = verticesOnCell.createDeviceCopy();
+     mesh.nEdgesOnEdge = nEdgesOnEdge.createDeviceCopy();
+     mesh.nEdgesOnCell = nEdgesOnCell.createDeviceCopy();
+
+     mesh.indexToEdgeID = indexToEdgeID.createDeviceCopy();
+     mesh.indexToCellID = indexToCellID.createDeviceCopy();
+     mesh.indexToVertexID = indexToVertexID.createDeviceCopy();
+
+     mesh.boundaryVertex = boundaryVertex.createDeviceCopy();
+     mesh.obtuseTriangle = obtuseTriangle.createDeviceCopy();
+
+     mesh.fEdge = fEdge.createDeviceCopy();
+     mesh.fCell = fCell.createDeviceCopy();
+     mesh.fVertex = fVertex.createDeviceCopy();
+
+     mesh.bottomDepth = bottomDepth.createDeviceCopy();
+
+     mesh.edgeSignOnCell = edgeSignOnCell.createDeviceCopy();
+
   }
 
 private:   
@@ -179,6 +250,7 @@ private:
       }
    }
   }
+
 
 
 };

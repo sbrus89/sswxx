@@ -52,15 +52,15 @@ public:
   }
 
   template <class T> 
-  T read(const char* var_str, int line) {
+  void read(const char* var_str, T &var, int line) {
     int var_id;
     int type;
     int ndims;
-    int dimids[NC_MAX_VAR_DIMS];
+    //int dimids[NC_MAX_VAR_DIMS];
+    int dimids[10];
     int dim_start;
     int i, j;
     int n=1;
-    T var;
     MPI_Offset dim_read;
     //size_t dim_read;
 
@@ -95,7 +95,6 @@ public:
       std::cout <<  dims[j] << std::endl;
       j = j + 1;
     }
-
     yakl::Dims yakl_dims(dims);
     var = T(var_str, yakl_dims);
 
@@ -128,9 +127,6 @@ public:
     }
 
     //print_array(var);
-
-    return var;
-
   }
 
   template <class T> 

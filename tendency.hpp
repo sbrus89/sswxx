@@ -22,19 +22,16 @@ public:
   int nVertLevels;
   
   Tendency(Mesh<M> &mesh) {
-  
-    this->nCells = mesh.nCells;
-    this->nEdges = mesh.nEdges;
-    this->nVertLevels = mesh.nVertLevels;  
-  
-    layerThickness = real2d("layerThickness_tend", nCells, nVertLevels);
-    normalVelocity = real2d("normalVelocity_tend", nEdges, nVertLevels);
-    ssh = real1d("ssh", nCells);
+
+    layerThickness = real2d("layerThickness_tend", mesh.nCells, mesh.nVertLevels);
+    normalVelocity = real2d("normalVelocity_tend", mesh.nEdges, mesh.nVertLevels);
+    ssh = real1d("ssh", mesh.nCells);
   }
   
   void layerThicknessTendencies(Mesh<M> &mesh, real2d &layerThickness_stage, real2d &normalVelocity_stage, real t) {
-  
-    parallel_for(SimpleBounds<2>(nCells, nVertLevels), YAKL_LAMBDA(int iCell, int kLevel) {
+
+    YAKL_SCOPE(layerThickness_tend, this->layerThickness);
+    parallel_for(SimpleBounds<2>(mesh.nCells, mesh.nVertLevels), YAKL_LAMBDA(int iCell, int kLevel) {
       
       real divergence = 0.0;
       for (int i=0; i<mesh.nEdgesOnCell(iCell); i++) {
@@ -44,7 +41,7 @@ public:
         divergence = divergence + mesh.edgeSignOnCell(iCell,i) * hAvg * normalVelocity_stage(iEdge,kLevel) * mesh.dvEdge(iEdge);
       }
 
-      layerThickness(iCell,kLevel) = divergence/mesh.areaCell(iCell);
+      layerThickness_tend(iCell,kLevel) = divergence/mesh.areaCell(iCell);
     });
 
   }
@@ -55,25 +52,27 @@ public:
     int cell1, cell2;
     int i, j, eoe;
 
-    parallel_for(SimpleBounds<1>(nCells), YAKL_LAMBDA(int iCell){
+    YAKL_SCOPE(ssh, this->ssh);
+    parallel_for(SimpleBounds<1>(mesh.nCells), YAKL_LAMBDA(int iCell){
 
       real totalThickness = 0.0;
-      for (int kLevel=0; kLevel<nVertLevels; kLevel++) {
+      for (int kLevel=0; kLevel<mesh.nVertLevels; kLevel++) {
         totalThickness = totalThickness + layerThickess_stage(iCell,kLevel);
       }
       ssh(iCell) = totalThickness - mesh.bottomDepth(iCell);
       
     });
 
-    parallel_for(SimpleBounds<2>(nEdges, nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
+    YAKL_SCOPE(normalVelocity_tend, this->normalVelocity);
+    parallel_for(SimpleBounds<2>(mesh.nEdges, mesh.nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
 
       int cell1 = mesh.cellsOnEdge(iEdge,0); 
       int cell2 = mesh.cellsOnEdge(iEdge,1);
 
-      normalVelocity(iEdge,kLevel) = -gravity*(ssh(cell2) - ssh(cell1))/mesh.dcEdge(iEdge);
+      normalVelocity_tend(iEdge,kLevel) = -gravity*(ssh(cell2) - ssh(cell1))/mesh.dcEdge(iEdge);
     });
   
-    parallel_for(SimpleBounds<2>(nEdges, nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
+    parallel_for(SimpleBounds<2>(mesh.nEdges, mesh.nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
 
       real qe = 0.0;
       for (int j=0; j<mesh.nEdgesOnEdge(iEdge); j++) {
@@ -81,7 +80,7 @@ public:
         qe = qe + mesh.weightsOnEdge(iEdge,j)*normalVelocity_stage(eoe,kLevel)*mesh.fEdge(eoe);
       }
 
-      normalVelocity(iEdge,kLevel) = normalVelocity(iEdge,kLevel) + qe;
+      normalVelocity_tend(iEdge,kLevel) = normalVelocity_tend(iEdge,kLevel) + qe;
     });
 
   }

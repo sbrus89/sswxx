@@ -30,17 +30,30 @@ int main (int argc, char **argv) {
   //decomp.initialize();
 
   std::cout << "Initializing mesh" << std::endl;
-  Mesh<yakl::memHost> mesh;
-  mesh.read("initial_state.nc");
+  Mesh<yakl::memHost> mesh_host;
+  mesh_host.read("initial_state.nc");
 
-  State<yakl::memHost> state("initial_state.nc", mesh);
+  Mesh<yakl::memDevice> mesh;
+  mesh_host.copy_to_device(mesh);
+
+  State<yakl::memHost> state_host(mesh_host);
+  state_host.read_initial_condition("initial_state.nc");
+
+  std::cout << "Initializing device state" << std::endl;
+  State<yakl::memDevice> state(mesh);
+  state_host.copy_to(state);
   state.compute_ssh(mesh);
-  
-  MPI_Barrier(MPI_COMM_WORLD);
-  io.create("output.nc", state);
-  io.write(state);
+  state.copy_to(state_host);
 
-  Timestep timestep(dt, mesh);
+  MPI_Barrier(MPI_COMM_WORLD);
+  std::cout << "Creating output file" << std::endl;
+  io.create("output.nc", state_host);
+  std::cout << "writing initial condition" << std::endl;
+  io.write(state_host);
+
+  std::cout << "initializing timestep" << std::endl;
+  Timestep<yakl::memDevice> timestep(dt, mesh);
+  std::cout << "done" << std::endl;
   
   yakl::fence();
 
@@ -48,10 +61,13 @@ int main (int argc, char **argv) {
 
     std::cout << "Time: " << t << std::endl;
     timestep.RKStep(state, mesh, t);
+    yakl::fence();
 
     t = t + dt;
     state.compute_ssh(mesh);
-    io.write(state);
+    state.copy_to(state_host);
+    io.write(state_host);
+    yakl::fence();
   }
 
   yakl::finalize();
