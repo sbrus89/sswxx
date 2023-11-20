@@ -1,31 +1,42 @@
 #include "const.h"
-#include "io.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 
 class State{
 public:
 
-  real3d ssh;
-  real3d normalVelocity;
-  real3d temp;
-  real3d dens;
+  real2dHost layerThickness, layerThickness_new;
+  real2dHost normalVelocity, normalVelocity_new;
   IO io;
 
   int nCells;
   int nEdges;
   int nVertLevels;
 
-  void State(int, nTimeLevels, int nCells, int nEdges, int nVertLevels) {
+  void init(const char *mesh_file, Mesh &mesh) {
 
-    ssh = real3d("ssh", nTimeLevels, nCells, nVertLevels);
-    normalVelocity = real3D("normalVelocity", nTimeLevels, nEdges, nVertLevels);
-    temp = real3d("temp", nTimeLevels, nCells, nVertLevels);
-    dens = real3d("dens", nTimeLevels, nCells, nVertLevels);
+    this->nCells = mesh.nCells;
+    this->nEdges = mesh.nEdges;
+    this->nVertLevels = mesh.nVertLevels;
 
-    this->nCells = nCells;
-    this->nEdges = nEdges;
-    this->nVertLevels = nVertLevels;
+    std::cout << "Reading initial conditions\n";
+    std::cout << "  nCells: " << nCells << "\n";
+    std::cout << "  nEdges: " << nEdges << "\n";
+    std::cout << "  nVertLevels: " << nVertLevels << "\n";
+
+    io.open(mesh_file);
+
+    std::cout << "begin reading initial conditions\n";
+
+    layerThickness = io.read<real2dHost>("layerThickness", __LINE__);
+    normalVelocity = io.read<real2dHost>("normalVelocity", __LINE__);
+
+    io.close();
+
+    std::cout << "done with initial conditions\n";
+
+    layerThickness_new = real2dHost("layerThickness_new", nCells, nVertLevels);
+    normalVelocity_new = real2dHost("normalVelocity_new", nEdges, nVertLevels);
 
   }
 
@@ -37,46 +48,22 @@ public:
 
     int iCell;
     int iEdge;
-    int jLevel;
+    int kLevel;
 
     for (iCell=0; iCell<nCells; iCell++) {
-      for (jLevel=0; jLevel<nVertLevels; jLevel++) {
-        ssh(1,iCell,jLevel) = ssh(2,iCell,jLevel)
-      }
-    }
-    for (iEdge=0; iEdge<nEdge; iEdge++) {
-      for (jLevel=0; jLevels<nVertLevels; jLevel++) {
-        normalVelocity(1,iCell,jLevel) = normalVelocity(2,iCell,jLevel)
+      for (kLevel=0; kLevel<nVertLevels; kLevel++) {
+        layerThickness(iCell,kLevel) = layerThickness_new(iCell,kLevel);
+        layerThickness_new(iCell,kLevel) = 0.0;
       }
     }
 
-  }
+    for (iEdge=0; iEdge<nEdges; iEdge++) {
+      for (kLevel=0; kLevel<nVertLevels; kLevel++) {
+        normalVelocity(iEdge,kLevel) = normalVelocity_new(iEdge,kLevel);
+        normalVelocity_new(iEdge,kLevel) = 0.0;
+      }
+    }
 
-  real2dHost read_double_var(const char* var_str, int dim1, int dim2, int dim3, int line) {
-    int var_id;
-    int i, j, k, l;
-    real2dHost var;
-
-    ncwrap(ncmpi_inq_varid(nc_id, var_str, &var_id), line);
-    double buff[dim1*dim2];
-    ncwrap(ncmpi_get_var_double_all(nc_id, var_id, buff), line);
-    var = real2dHost(var_str, dim1, dim2);
-
-    std::cout << "\n";
-    std::cout << var_str << "\n";
-
-    l = 0;
-    for (j=0; j<dim1; j++) {
-      for (i=0; i<dim2; i++) {
-        for (k=0; k<dim3; k++) {
-          var(j,i,k) = buff[l];
-          std::cout << var(j,i,k) << ", ";
-          l++;
-        }
-      }   
-      std::cout << "\n";
-    }   
-    return var;
   }
 
 };	

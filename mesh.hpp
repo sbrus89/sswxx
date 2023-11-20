@@ -1,11 +1,13 @@
 #include "const.h"
 #include "io.hpp"
+//#include "YAKL_netcdf.h"
 #include <stdlib.h>
 #include <stdio.h>
 
 class Mesh{
 public:
    int nCells, nEdges, nVertices;
+   int nVertLevels;
    int maxEdges, maxEdges2;
    int vertexDegree;
 
@@ -30,18 +32,24 @@ public:
    real1dHost areaCell, areaTriangle;
    real1dHost gridSpacing, meshDensity;
    real2dHost kiteAreasOnVertex;
+   real1dHost bottomDepth;
+   real1dHost fEdge, fVertex, fCell;
 
    real2dHost edgeSignOnCell;
 
 
    void read(const char* mesh_file){
      IO io;
+     //yakl::SimpleNetCDF nc;
+
      std::cout << mesh_file << "\n";
 
+     ///*
      io.open(mesh_file);
      nCells = io.read_dim("nCells", __LINE__);
      nEdges = io.read_dim("nEdges", __LINE__);
      nVertices = io.read_dim("nVertices", __LINE__);
+     nVertLevels= io.read_dim("nVertLevels", __LINE__);
      maxEdges = io.read_dim("maxEdges", __LINE__);
      maxEdges2 = io.read_dim("maxEdges2", __LINE__);
      vertexDegree = io.read_dim("vertexDegree", __LINE__);
@@ -97,9 +105,82 @@ public:
      boundaryVertex = io.read<int1dHost>("boundaryVertex", __LINE__); 
      obtuseTriangle = io.read<int1dHost>("obtuseTriangle", __LINE__); 
 
+     fEdge = io.read<real1dHost>("fEdge", __LINE__); 
+     fCell= io.read<real1dHost>("fCell", __LINE__); 
+     fVertex= io.read<real1dHost>("fVertex", __LINE__); 
+
+     bottomDepth= io.read<real1dHost>("bottomDepth", __LINE__); 
+
+     io.close();
+
+     //*/
+
+     /*
+     nc.open(mesh_file);
+    
+     nc.read(xCell, "xCell"); 
+     //io.print_array(xCell);
+     nc.read(yCell, "yCell"); 
+     nc.read(zCell, "zCell"); 
+     nc.read(lonCell, "lonCell"); 
+     nc.read(latCell, "latCell"); 
+    
+     nc.read(xEdge, "xEdge"); 
+     nc.read(yEdge, "yEdge"); 
+     nc.read(zEdge, "zEdge"); 
+     nc.read(lonEdge, "lonEdge"); 
+     nc.read(latEdge, "latEdge"); 
+    
+     nc.read(xVertex, "xVertex"); 
+     nc.read(yVertex, "yVertex"); 
+     nc.read(zVertex, "zVertex"); 
+     nc.read(lonVertex, "lonVertex"); 
+     nc.read(latVertex, "latVertex"); 
+    
+     nc.read(weightsOnEdge, "weightsOnEdge"); 
+    
+     nc.read(angleEdge, "angleEdge"); 
+     nc.read(dcEdge, "dcEdge"); 
+     nc.read(dvEdge, "dvEdge"); 
+    
+     nc.read(kiteAreasOnVertex, "kiteAreasOnVertex"); 
+     nc.read(areaTriangle, "areaTriangle"); 
+     nc.read(areaCell, "areaCell"); 
+     nc.read(triangleQuality, "triangleQuality"); 
+     nc.read(triangleAngleQuality, "triangleAngleQuality"); 
+     nc.read(cellQuality, "cellQuality"); 
+     nc.read(gridSpacing, "gridSpacing"); 
+     nc.read(meshDensity, "meshDensity"); 
+    
+     nc.read(edgesOnEdge, "edgesOnEdge"); 
+     nc.read(cellsOnEdge, "cellsOnEdge"); 
+     nc.read(verticesOnEdge, "verticesOnEdge"); 
+     nc.read(cellsOnVertex, "cellsOnVertex"); 
+     nc.read(edgesOnVertex, "edgesOnVertex"); 
+     nc.read(cellsOnCell, "cellsOnCell"); 
+     nc.read(edgesOnCell, "edgesOnCell"); 
+     nc.read(verticesOnCell, "verticesOnCell"); 
+     nc.read(nEdgesOnEdge, "nEdgesOnEdge"); 
+     nc.read(nEdgesOnCell, "nEdgesOnCell"); 
+    
+     nc.read(indexToEdgeID, "indexToEdgeID"); 
+     nc.read(indexToCellID, "indexToCellID"); 
+     nc.read(indexToVertexID, "indexToVertexID"); 
+    
+     nc.read(boundaryVertex, "boundaryVertex"); 
+     nc.read(obtuseTriangle, "obtuseTriangle"); 
+    
+     nc.read(fEdge, "fEdge"); 
+     nc.read(fCell, "fCell"); 
+     nc.read(fVertex, "fVertex"); 
+    
+     nc.read(bottomDepth, "bottomDepth"); 
+     */
+
+     std::cout << "done reading mesh\n";
+
      edgeSignOnCell = computeEdgeSign();
      
-     std::cout << "done reading mesh\n";
   }
 
 private:   
@@ -110,17 +191,17 @@ private:
     int nEdge;
     int j;
 
-    edgeSignOnCell = real2dHost("edgeSignOnCell", maxEdges, nCells);
+    edgeSignOnCell = real2dHost("edgeSignOnCell", nCells, maxEdges);
     
     for (iCell=0; iCell<nCells; iCell++) {
       nEdge = nEdgesOnCell(iCell);
       for (j=0; j<nEdge; j++) {
         jEdge = edgesOnCell(j,iCell);
         if (iCell == cellsOnEdge(1,jEdge)) {
-          edgeSignOnCell(j,iCell) = -1.0;
+          edgeSignOnCell(iCell,j) = -1.0;
         }
         else {
-          edgeSignOnCell(j,iCell) = 1.0;
+          edgeSignOnCell(iCell,j) = 1.0;
         }
 
       }

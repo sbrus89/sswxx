@@ -9,6 +9,10 @@ public:
     ncwrap(ncmpi_open(MPI_COMM_WORLD, nc_file, NC_NOWRITE, MPI_INFO_NULL, &nc_id), __LINE__);
   }
 
+  void close() {
+    ncwrap(ncmpi_close(nc_id), __LINE__);
+  }
+
   void ncwrap(int err, int line) {
     if (err != NC_NOERR) {
       printf("NetCDF Error at line: %d\n", line);
@@ -37,7 +41,8 @@ public:
     int type;
     int ndims;
     int dimids[NC_MAX_VAR_DIMS];
-    int i;
+    int dim_start;
+    int i, j;
     int n=1;
     T var;
     MPI_Offset dim_read;
@@ -52,13 +57,21 @@ public:
 
     std::cout << "# dims: " << ndims << "\n";
 
-    std::vector<int> dims(ndims);
-    for (i=0; i<ndims; i++) {
-      ncwrap(ncmpi_inq_dimlen(nc_id, dimids[i], &dim_read), line);
-      dims[i] = dim_read;
-      std::cout <<  dims[i] << "\n";
+    if (ndims == 3) {
+      dim_start = 1;
     }
+    else { 
+      dim_start = 0;
+    }
+    std::vector<int> dims(ndims-dim_start);
 
+    j = 0;
+    for (i=dim_start; i<ndims; i++) {
+      ncwrap(ncmpi_inq_dimlen(nc_id, dimids[i], &dim_read), line);
+      dims[j] = dim_read;
+      std::cout <<  dims[j] << "\n";
+      j = j + 1;
+    }
 
     yakl::Dims yakl_dims(dims);
     var = T(var_str, yakl_dims);
@@ -124,7 +137,8 @@ public:
 
   void print_array(real2dHost var) {
     int i, j;
-    
+    std::cout << var.dimension[0] << "\n";
+    std::cout << var.dimension[1] << "\n";
     for (j=0; j<var.dimension[0]; j++) {
       for (i=0; i<var.dimension[1]; i++) {
         std::cout << var(j,i) << ", ";
