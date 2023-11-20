@@ -50,7 +50,6 @@ public:
      maxEdges2 = io.read_dim("maxEdges2", __LINE__);
      vertexDegree = io.read_dim("vertexDegree", __LINE__);
 
-     std::cout << "here" << std::endl;
      xCell = io.read<real1dHost>("xCell", __LINE__); 
      yCell = io.read<real1dHost>("yCell", __LINE__); 
      zCell = io.read<real1dHost>("zCell", __LINE__); 
@@ -113,13 +112,13 @@ public:
      std::cout << "done reading mesh" << std::endl;
 
      fixIndices();
-     edgeSignOnCell = computeEdgeSign();
+     computeEdgeSign();
      
   }
 
 private:   
 
-  real2dHost computeEdgeSign(void) {
+  void computeEdgeSign(void) {
 
     int iCell, jEdge;
     int nEdge;
@@ -140,9 +139,6 @@ private:
 
       }
     }
-
-    return edgeSignOnCell;
-
   }
 
   void fixIndices(void) {
@@ -177,4 +173,4 @@ private:
   }
 
 
-};	
+};

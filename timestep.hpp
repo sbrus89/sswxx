@@ -116,7 +116,7 @@ public:
           state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity_new(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
         }
       }
-  }
+    }
   }
 
 };	

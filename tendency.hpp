@@ -28,7 +28,7 @@ public:
     int i, iEdge;
     int cell2;
     real hAvg;
- 
+
     for (iCell=0; iCell<nCells; iCell++) {
       for (kLevel=0; kLevel<nVertLevels; kLevel++) {
         layerThickness(iCell,kLevel) = 0.0;
@@ -39,9 +39,9 @@ public:
       for (i=0; i<mesh.nEdgesOnCell(iCell); i++) {
         iEdge = mesh.edgesOnCell(iCell,i);
         cell2 = mesh.cellsOnCell(iCell,i);
+        //hAvg = 0.5*(layerThickness_stage(iCell,kLevel) + layerThickness_stage(cell2,kLevel));
+        hAvg = 0.5*(mesh.bottomDepth(iCell) + mesh.bottomDepth(cell2));
         for (kLevel=0; kLevel<nVertLevels; kLevel++) {
-          //hAvg = 0.5*(layerThickness_stage(iCell,kLevel) + layerThickness_stage(cell2,kLevel));
-          hAvg = 0.5*(mesh.bottomDepth(iCell) + mesh.bottomDepth(cell2));
           layerThickness(iCell,kLevel) = layerThickness(iCell,kLevel) + mesh.edgeSignOnCell(iCell,i)*hAvg*normalVelocity_stage(iEdge,kLevel)*mesh.dvEdge(iEdge)/mesh.areaCell(iCell);
         }
       }
@@ -56,7 +56,7 @@ public:
     int i, j, eoe;
     real totalThickness1, totalThickness2;
     real ssh1, ssh2;
-  
+
     for (iEdge=0; iEdge<nEdges; iEdge++) {
       for (kLevel=0; kLevel<nVertLevels; kLevel++) {
         normalVelocity(iEdge,kLevel) = 0.0;
