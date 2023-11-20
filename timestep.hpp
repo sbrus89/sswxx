@@ -59,20 +59,13 @@ public:
 
   void compute_stage(int stage, real t, State &state, Mesh &mesh) {
 
-    int iCell;
-    int iEdge;
-    int jLevel;
+    parallel_for(SimpleBounds<2>(mesh.nCells,mesh.nVertLevels), YAKL_LAMBDA(int iCell, int kLevel){
+      layerThickness_stage(iCell,kLevel) = state.layerThickness(iCell,kLevel) + a(stage)*dt*tend.layerThickness(iCell,kLevel);
+    });
 
-    for (iCell=0; iCell<mesh.nCells; iCell++) {
-      for (jLevel=0; jLevel<mesh.nVertLevels; jLevel++) {
-        layerThickness_stage(iCell,jLevel) = state.layerThickness(iCell,jLevel) + a(stage)*dt*tend.layerThickness(iCell,jLevel);
-      }
-    }
-    for (iEdge=0; iEdge<mesh.nEdges; iEdge++) {
-      for (jLevel=0; jLevel<mesh.nVertLevels; jLevel++) {
-        normalVelocity_stage(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel) + a(stage)*dt*tend.normalVelocity(iEdge,jLevel);
-      }
-    }
+    parallel_for(SimpleBounds<2>(mesh.nEdges,mesh.nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
+        normalVelocity_stage(iEdge,kLevel) = state.normalVelocity(iEdge,kLevel) + a(stage)*dt*tend.normalVelocity(iEdge,kLevel);
+    });
 
     compute_tendencies(mesh, t+c(stage)*dt);
     accumulate_stage(stage, state);
@@ -88,34 +81,27 @@ public:
 
   void accumulate_stage(int stage, State &state) {
 
-    int iCell;
-    int iEdge;
-    int jLevel;
-
     if (stage==0) {
-      for (iCell=0; iCell<state.nCells; iCell++) {
-        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-          state.layerThickness_new(iCell,jLevel) = state.layerThickness(iCell,jLevel) + b(stage)*dt*tend.layerThickness(iCell,jLevel);
-        }
-      }
-      for (iEdge=0; iEdge<state.nEdges; iEdge++) {
-        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-          state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
-        }
-      }
+
+      parallel_for(SimpleBounds<2>(state.nCells,state.nVertLevels), YAKL_LAMBDA(int iCell, int kLevel){
+        state.layerThickness_new(iCell,kLevel) = state.layerThickness(iCell,kLevel) + b(stage)*dt*tend.layerThickness(iCell,kLevel);
+      });
+
+      parallel_for(SimpleBounds<2>(state.nEdges,state.nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
+        state.normalVelocity_new(iEdge,kLevel) = state.normalVelocity(iEdge,kLevel) + b(stage)*dt*tend.normalVelocity(iEdge,kLevel);
+      });
 
     }
     else {
-      for (iCell=0; iCell<state.nCells; iCell++) {
-        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-          state.layerThickness_new(iCell,jLevel) = state.layerThickness_new(iCell,jLevel) + b(stage)*dt*tend.layerThickness(iCell,jLevel);
-        }
-      }
-      for (iEdge=0; iEdge<state.nEdges; iEdge++) {
-        for (jLevel=0; jLevel<state.nVertLevels; jLevel++) { 
-          state.normalVelocity_new(iEdge,jLevel) = state.normalVelocity_new(iEdge,jLevel) + b(stage)*dt*tend.normalVelocity(iEdge,jLevel);
-        }
-      }
+
+      parallel_for(SimpleBounds<2>(state.nCells,state.nVertLevels), YAKL_LAMBDA(int iCell, int kLevel){
+        state.layerThickness_new(iCell,kLevel) = state.layerThickness_new(iCell,kLevel) + b(stage)*dt*tend.layerThickness(iCell,kLevel);
+      });
+
+      parallel_for(SimpleBounds<2>(state.nEdges,state.nVertLevels), YAKL_LAMBDA(int iEdge, int kLevel){
+        state.normalVelocity_new(iEdge,kLevel) = state.normalVelocity_new(iEdge,kLevel) + b(stage)*dt*tend.normalVelocity(iEdge,kLevel);
+      });
+
     }
   }
 
