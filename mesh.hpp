@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+template<int M>
 class Mesh{
 public:
    int nCells, nEdges, nVertices;
@@ -9,31 +10,38 @@ public:
    int maxEdges, maxEdges2;
    int vertexDegree;
 
-   int2dHost edgesOnEdge, cellsOnEdge, verticesOnEdge;
-   int2dHost cellsOnVertex, edgesOnVertex;
-   int2dHost cellsOnCell, edgesOnCell, verticesOnCell;
-   int1dHost indexToEdgeID, indexToVertexID, indexToCellID;
-   int1dHost nEdgesOnEdge, nEdgesOnCell;
-   int1dHost boundaryVertex;
-   int1dHost obtuseTriangle;
-  
-   real2dHost weightsOnEdge;
-   real1dHost xCell, yCell, zCell;
-   real1dHost lonCell, latCell;
-   real1dHost xEdge, yEdge, zEdge;
-   real1dHost lonEdge, latEdge;
-   real1dHost xVertex, yVertex, zVertex;
-   real1dHost lonVertex, latVertex;
-   real1dHost dcEdge, dvEdge;
-   real1dHost angleEdge;
-   real1dHost cellQuality, triangleQuality, triangleAngleQuality;
-   real1dHost areaCell, areaTriangle;
-   real1dHost gridSpacing, meshDensity;
-   real2dHost kiteAreasOnVertex;
-   real1dHost bottomDepth;
-   real1dHost fEdge, fVertex, fCell;
+   using int1d = yakl::Array<int   ,1, M>; 
+   using int2d = yakl::Array<int   ,2, M>; 
+   using int3d = yakl::Array<int   ,3, M>; 
+   using real1d = yakl::Array<real  ,1, M>; 
+   using real2d = yakl::Array<real  ,2, M>; 
+   using real3d = yakl::Array<real  ,3, M>; 
 
-   real2dHost edgeSignOnCell;
+   int2d edgesOnEdge, cellsOnEdge, verticesOnEdge;
+   int2d cellsOnVertex, edgesOnVertex;
+   int2d cellsOnCell, edgesOnCell, verticesOnCell;
+   int1d indexToEdgeID, indexToVertexID, indexToCellID;
+   int1d nEdgesOnEdge, nEdgesOnCell;
+   int1d boundaryVertex;
+   int1d obtuseTriangle;
+  
+   real2d weightsOnEdge;
+   real1d xCell, yCell, zCell;
+   real1d lonCell, latCell;
+   real1d xEdge, yEdge, zEdge;
+   real1d lonEdge, latEdge;
+   real1d xVertex, yVertex, zVertex;
+   real1d lonVertex, latVertex;
+   real1d dcEdge, dvEdge;
+   real1d angleEdge;
+   real1d cellQuality, triangleQuality, triangleAngleQuality;
+   real1d areaCell, areaTriangle;
+   real1d gridSpacing, meshDensity;
+   real2d kiteAreasOnVertex;
+   real1d bottomDepth;
+   real1d fEdge, fVertex, fCell;
+
+   real2d edgeSignOnCell;
 
 
    void read(const char* mesh_file){
@@ -50,62 +58,62 @@ public:
      maxEdges2 = io.read_dim("maxEdges2", __LINE__);
      vertexDegree = io.read_dim("vertexDegree", __LINE__);
 
-     xCell = io.read<real1dHost>("xCell", __LINE__); 
-     yCell = io.read<real1dHost>("yCell", __LINE__); 
-     zCell = io.read<real1dHost>("zCell", __LINE__); 
-     lonCell = io.read<real1dHost>("lonCell", __LINE__); 
-     latCell = io.read<real1dHost>("latCell", __LINE__); 
+     xCell = io.read<real1d>("xCell", __LINE__); 
+     yCell = io.read<real1d>("yCell", __LINE__); 
+     zCell = io.read<real1d>("zCell", __LINE__); 
+     lonCell = io.read<real1d>("lonCell", __LINE__); 
+     latCell = io.read<real1d>("latCell", __LINE__); 
 
-     xEdge = io.read<real1dHost>("xEdge", __LINE__); 
-     yEdge = io.read<real1dHost>("yEdge", __LINE__); 
-     zEdge = io.read<real1dHost>("zEdge", __LINE__); 
-     lonEdge = io.read<real1dHost>("lonEdge", __LINE__); 
-     latEdge = io.read<real1dHost>("latEdge", __LINE__); 
+     xEdge = io.read<real1d>("xEdge", __LINE__); 
+     yEdge = io.read<real1d>("yEdge", __LINE__); 
+     zEdge = io.read<real1d>("zEdge", __LINE__); 
+     lonEdge = io.read<real1d>("lonEdge", __LINE__); 
+     latEdge = io.read<real1d>("latEdge", __LINE__); 
 
-     xVertex = io.read<real1dHost>("xVertex", __LINE__); 
-     yVertex = io.read<real1dHost>("yVertex", __LINE__); 
-     zVertex = io.read<real1dHost>("zVertex", __LINE__); 
-     lonVertex = io.read<real1dHost>("lonVertex", __LINE__); 
-     latVertex = io.read<real1dHost>("latVertex", __LINE__); 
+     xVertex = io.read<real1d>("xVertex", __LINE__); 
+     yVertex = io.read<real1d>("yVertex", __LINE__); 
+     zVertex = io.read<real1d>("zVertex", __LINE__); 
+     lonVertex = io.read<real1d>("lonVertex", __LINE__); 
+     latVertex = io.read<real1d>("latVertex", __LINE__); 
 
-     weightsOnEdge = io.read<real2dHost>("weightsOnEdge", __LINE__); 
+     weightsOnEdge = io.read<real2d>("weightsOnEdge", __LINE__); 
 
-     angleEdge = io.read<real1dHost>("angleEdge", __LINE__); 
-     dcEdge = io.read<real1dHost>("dcEdge", __LINE__); 
-     dvEdge = io.read<real1dHost>("dvEdge", __LINE__); 
+     angleEdge = io.read<real1d>("angleEdge", __LINE__); 
+     dcEdge = io.read<real1d>("dcEdge", __LINE__); 
+     dvEdge = io.read<real1d>("dvEdge", __LINE__); 
 
-     kiteAreasOnVertex = io.read<real2dHost>("kiteAreasOnVertex", __LINE__); 
-     areaTriangle = io.read<real1dHost>("areaTriangle", __LINE__); 
-     areaCell= io.read<real1dHost>("areaCell", __LINE__); 
-     triangleQuality = io.read<real1dHost>("triangleQuality", __LINE__); 
-     triangleAngleQuality = io.read<real1dHost>("triangleAngleQuality", __LINE__); 
-     cellQuality = io.read<real1dHost>("cellQuality", __LINE__); 
-     gridSpacing = io.read<real1dHost>("gridSpacing", __LINE__); 
-     meshDensity = io.read<real1dHost>("meshDensity", __LINE__); 
+     kiteAreasOnVertex = io.read<real2d>("kiteAreasOnVertex", __LINE__); 
+     areaTriangle = io.read<real1d>("areaTriangle", __LINE__); 
+     areaCell= io.read<real1d>("areaCell", __LINE__); 
+     triangleQuality = io.read<real1d>("triangleQuality", __LINE__); 
+     triangleAngleQuality = io.read<real1d>("triangleAngleQuality", __LINE__); 
+     cellQuality = io.read<real1d>("cellQuality", __LINE__); 
+     gridSpacing = io.read<real1d>("gridSpacing", __LINE__); 
+     meshDensity = io.read<real1d>("meshDensity", __LINE__); 
 
-     edgesOnEdge = io.read<int2dHost>("edgesOnEdge", __LINE__); 
-     cellsOnEdge = io.read<int2dHost>("cellsOnEdge", __LINE__); 
-     verticesOnEdge = io.read<int2dHost>("verticesOnEdge", __LINE__); 
-     cellsOnVertex = io.read<int2dHost>("cellsOnVertex", __LINE__); 
-     edgesOnVertex = io.read<int2dHost>("edgesOnVertex", __LINE__); 
-     cellsOnCell = io.read<int2dHost>("cellsOnCell", __LINE__); 
-     edgesOnCell = io.read<int2dHost>("edgesOnCell", __LINE__); 
-     verticesOnCell = io.read<int2dHost>("verticesOnCell", __LINE__); 
-     nEdgesOnEdge = io.read<int1dHost>("nEdgesOnEdge", __LINE__); 
-     nEdgesOnCell = io.read<int1dHost>("nEdgesOnCell", __LINE__); 
+     edgesOnEdge = io.read<int2d>("edgesOnEdge", __LINE__); 
+     cellsOnEdge = io.read<int2d>("cellsOnEdge", __LINE__); 
+     verticesOnEdge = io.read<int2d>("verticesOnEdge", __LINE__); 
+     cellsOnVertex = io.read<int2d>("cellsOnVertex", __LINE__); 
+     edgesOnVertex = io.read<int2d>("edgesOnVertex", __LINE__); 
+     cellsOnCell = io.read<int2d>("cellsOnCell", __LINE__); 
+     edgesOnCell = io.read<int2d>("edgesOnCell", __LINE__); 
+     verticesOnCell = io.read<int2d>("verticesOnCell", __LINE__); 
+     nEdgesOnEdge = io.read<int1d>("nEdgesOnEdge", __LINE__); 
+     nEdgesOnCell = io.read<int1d>("nEdgesOnCell", __LINE__); 
 
-     indexToEdgeID = io.read<int1dHost>("indexToEdgeID", __LINE__); 
-     indexToCellID = io.read<int1dHost>("indexToCellID", __LINE__); 
-     indexToVertexID = io.read<int1dHost>("indexToVertexID", __LINE__); 
+     indexToEdgeID = io.read<int1d>("indexToEdgeID", __LINE__); 
+     indexToCellID = io.read<int1d>("indexToCellID", __LINE__); 
+     indexToVertexID = io.read<int1d>("indexToVertexID", __LINE__); 
 
-     boundaryVertex = io.read<int1dHost>("boundaryVertex", __LINE__); 
-     obtuseTriangle = io.read<int1dHost>("obtuseTriangle", __LINE__); 
+     boundaryVertex = io.read<int1d>("boundaryVertex", __LINE__); 
+     obtuseTriangle = io.read<int1d>("obtuseTriangle", __LINE__); 
 
-     fEdge = io.read<real1dHost>("fEdge", __LINE__); 
-     fCell= io.read<real1dHost>("fCell", __LINE__); 
-     fVertex= io.read<real1dHost>("fVertex", __LINE__); 
+     fEdge = io.read<real1d>("fEdge", __LINE__); 
+     fCell= io.read<real1d>("fCell", __LINE__); 
+     fVertex= io.read<real1d>("fVertex", __LINE__); 
 
-     bottomDepth= io.read<real1dHost>("bottomDepth", __LINE__); 
+     bottomDepth= io.read<real1d>("bottomDepth", __LINE__); 
 
      io.close();
 
@@ -124,7 +132,7 @@ private:
     int nEdge;
     int j;
 
-    edgeSignOnCell = real2dHost("edgeSignOnCell", nCells, maxEdges);
+    edgeSignOnCell = real2d("edgeSignOnCell", nCells, maxEdges);
     
     for (iCell=0; iCell<nCells; iCell++) {
       nEdge = nEdgesOnCell(iCell);

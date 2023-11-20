@@ -8,7 +8,7 @@
 #include "mesh.hpp"
 #include "state.hpp"
 #include "timestep.hpp"
-#include "decomp.hpp"
+//#include "decomp.hpp"
 #include <ctime>
 #include <chrono>
 
@@ -30,10 +30,10 @@ int main (int argc, char **argv) {
   //decomp.initialize();
 
   std::cout << "Initializing mesh" << std::endl;
-  Mesh mesh;
+  Mesh<yakl::memHost> mesh;
   mesh.read("initial_state.nc");
 
-  State state("initial_state.nc", mesh);
+  State<yakl::memHost> state("initial_state.nc", mesh);
   state.compute_ssh(mesh);
   
   MPI_Barrier(MPI_COMM_WORLD);

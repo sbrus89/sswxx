@@ -5,23 +5,31 @@
 //#include "mesh.hpp"
 #include "tendency.hpp"
 
+template<int M>
 class Timestep{
 public:
 
-  real1dHost a, b, c;
-  double dt;
-  Tendency tend;
-  int nStage;
-  real2dHost layerThickness_stage;
-  real2dHost normalVelocity_stage;
+  using int1d = yakl::Array<int   ,1, M>; 
+  using int2d = yakl::Array<int   ,2, M>; 
+  using int3d = yakl::Array<int   ,3, M>; 
+  using real1d = yakl::Array<real  ,1, M>; 
+  using real2d = yakl::Array<real  ,2, M>; 
+  using real3d = yakl::Array<real  ,3, M>; 
 
-  Timestep (double dt, Mesh &mesh): tend(mesh) {
+  real1d a, b, c;
+  double dt;
+  Tendency<M> tend;
+  int nStage;
+  real2d layerThickness_stage;
+  real2d normalVelocity_stage;
+
+  Timestep (double dt, Mesh<M> &mesh): tend(mesh) {
 
     nStage = 4;
      
-    a = real1dHost("a",nStage);
-    b = real1dHost("b",nStage);
-    c = real1dHost("c",nStage);
+    a = real1d("a",nStage);
+    b = real1d("b",nStage);
+    c = real1d("c",nStage);
 
     a(0) = 0.0;
     a(1) = 1.0/2.0;
@@ -40,12 +48,12 @@ public:
 
     this->dt = dt;
 
-    layerThickness_stage = real2dHost("layerThickness_stage", mesh.nCells, mesh.nVertLevels);
-    normalVelocity_stage = real2dHost("normalVelocity_stage", mesh.nEdges, mesh.nVertLevels);
+    layerThickness_stage = real2d("layerThickness_stage", mesh.nCells, mesh.nVertLevels);
+    normalVelocity_stage = real2d("normalVelocity_stage", mesh.nEdges, mesh.nVertLevels);
 
   }
 
-  void RKStep (State &state, Mesh &mesh, real t) {
+  void RKStep (State<M> &state, Mesh<M> &mesh, real t) {
 
     int iStage;
 
@@ -57,7 +65,7 @@ public:
 
   }
 
-  void compute_stage(int stage, real t, State &state, Mesh &mesh) {
+  void compute_stage(int stage, real t, State<M> &state, Mesh<M> &mesh) {
 
     parallel_for(SimpleBounds<2>(mesh.nCells,mesh.nVertLevels), YAKL_LAMBDA(int iCell, int kLevel){
       layerThickness_stage(iCell,kLevel) = state.layerThickness(iCell,kLevel) + a(stage)*dt*tend.layerThickness(iCell,kLevel);
@@ -72,14 +80,14 @@ public:
 
   }
 
-  void compute_tendencies(Mesh &mesh, double t) {
+  void compute_tendencies(Mesh<M> &mesh, double t) {
 
    tend.layerThicknessTendencies(mesh, layerThickness_stage, normalVelocity_stage, t);
    tend.normalVelocityTendencies(mesh, layerThickness_stage, normalVelocity_stage, t);
 
   }
 
-  void accumulate_stage(int stage, State &state) {
+  void accumulate_stage(int stage, State<M> &state) {
 
     if (stage==0) {
 
